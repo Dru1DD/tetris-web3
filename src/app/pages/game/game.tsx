@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type TouchEventHandler,
+} from "react";
 import { useNavigate } from "react-router";
 import { useSequence } from "@/hooks/use-sequence";
 import { usePlayfield } from "@/hooks/use-playfield";
@@ -111,75 +117,6 @@ const Game = () => {
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [piece, playfield, running]);
-
-  useEffect(() => {
-    if (!piece || !running) return;
-
-    let startX = 0;
-    let startY = 0;
-    let endX = 0;
-    let endY = 0;
-    const minSwipe = 20; // px threshold
-
-    const onTouchStart = (e: TouchEvent) => {
-      const t = e.touches[0];
-      startX = t.clientX;
-      startY = t.clientY;
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      const t = e.touches[0];
-      endX = t.clientX;
-      endY = t.clientY;
-    };
-
-    const onTouchEnd = () => {
-      const dx = endX - startX;
-      const dy = endY - startY;
-
-      const absX = Math.abs(dx);
-      const absY = Math.abs(dy);
-
-      if (absX < minSwipe && absY < minSwipe) {
-        // rotate
-        const rotated = { ...piece, matrix: rotateTetromino(piece.matrix) };
-        if (!hasCollision(playfield, rotated)) setPiece(rotated);
-        return;
-      }
-
-      if (absX > absY) {
-        if (dx < 0) {
-          // swipe left
-          const moved = { ...piece, col: piece.col - 1 };
-          if (!hasCollision(playfield, moved)) setPiece(moved);
-        } else {
-          // swipe right
-          const moved = { ...piece, col: piece.col + 1 };
-          if (!hasCollision(playfield, moved)) setPiece(moved);
-        }
-      } else {
-        if (dy > 0) {
-          // swipe down
-          const moved = { ...piece, row: piece.row + 1 };
-          if (!hasCollision(playfield, moved)) setPiece(moved);
-        } else {
-          // swipe up → rotate (optional: same as tap)
-          const rotated = { ...piece, matrix: rotateTetromino(piece.matrix) };
-          if (!hasCollision(playfield, rotated)) setPiece(rotated);
-        }
-      }
-    };
-
-    window.addEventListener("touchstart", onTouchStart);
-    window.addEventListener("touchmove", onTouchMove);
-    window.addEventListener("touchend", onTouchEnd);
-
-    return () => {
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
-    };
   }, [piece, playfield, running]);
 
   // game loop
@@ -391,33 +328,54 @@ const Game = () => {
     navigate("/");
   };
 
-  // NAVIGATION
+  // Buttons movement
 
-  const handleLeftButtonClicked = () => {
+  const handleLeftButtonClicked: TouchEventHandler<HTMLButtonElement> = (
+    event
+  ) => {
+    event.stopPropagation();
+    event.preventDefault();
     if (!piece || !running) return;
     const moved = { ...piece, col: piece.col - 1 };
     if (!hasCollision(playfield, moved)) setPiece(moved);
   };
 
-  const handleRightButtonClicked = () => {
+  const handleRightButtonClicked: TouchEventHandler<HTMLButtonElement> = (
+    event
+  ) => {
+    event.stopPropagation();
+    event.preventDefault();
     if (!piece || !running) return;
     const moved = { ...piece, col: piece.col + 1 };
     if (!hasCollision(playfield, moved)) setPiece(moved);
   };
 
-  const handleRotateButtonClicked = () => {
-    if (!piece || !running) return;
-    const rotated = {
-      ...piece,
-      matrix: rotateTetromino(piece.matrix),
-    };
-    if (!hasCollision(playfield, rotated)) setPiece(rotated);
-  };
-
-  const handleDownButtonClicked = () => {
+  const handleUpButtonClicked: TouchEventHandler<HTMLButtonElement> = (
+    event
+  ) => {
+    event.stopPropagation();
+    event.preventDefault();
     if (!piece || !running) return;
     const rotated = { ...piece, matrix: rotateTetromino(piece.matrix) };
     if (!hasCollision(playfield, rotated)) setPiece(rotated);
+  };
+
+  const handleDownButtonClicked: TouchEventHandler<HTMLButtonElement> = (
+    event
+  ) => {
+    event.stopPropagation();
+    event.preventDefault();
+    if (!piece || !running) return;
+
+    const moved = { ...piece };
+
+    while (!hasCollision(playfield, { ...moved, row: moved.row + 1 })) {
+      moved.row++;
+    }
+
+    setPiece(moved);
+
+    dropCounterRef.current = dropInterval;
   };
   return (
     <div className="h-screen w-full bg-[#1f1f1f] flex flex-col items-center justify-start p-4 md:justify-center md:gap-1">
@@ -499,27 +457,27 @@ const Game = () => {
       <div className="fixed bottom-4 left-0 right-0 flex justify-center md:hidden">
         <div className="flex gap-4 bg-[#2a2a2a] p-3 rounded-2xl shadow-lg border border-[#333]">
           <Button
-            onClick={handleLeftButtonClicked}
+            onTouchStart={handleLeftButtonClicked}
             className="w-16 h-16 bg-[#444] hover:bg-[#555] text-xl"
           >
             ←
           </Button>
 
           <Button
-            onClick={handleRotateButtonClicked}
+            onTouchStart={handleUpButtonClicked}
             className="w-16 h-16 bg-[#444] hover:bg-[#555] text-xl"
           >
             ↑
           </Button>
           <Button
-            onClick={handleDownButtonClicked}
+            onTouchStart={handleDownButtonClicked}
             className="w-16 h-16 bg-[#444] hover:bg-[#555] text-xl"
           >
             ↓
           </Button>
 
           <Button
-            onClick={handleRightButtonClicked}
+            onTouchStart={handleRightButtonClicked}
             className="w-16 h-16 bg-[#444] hover:bg-[#555] text-xl"
           >
             →

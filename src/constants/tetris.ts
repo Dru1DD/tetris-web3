@@ -66,7 +66,7 @@ for (const key in TETROMINOS) {
 
 export const ROWS = 20;
 export const COLS = 10;
-export const GRID = 24;
+export const GRID = 22;
 
 
 export const POINTS = 100;
