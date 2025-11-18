@@ -100,7 +100,7 @@ const Game = () => {
 
   useEffect(() => {
     resize();
-    resizePreview();
+    // resizePreview();
   }, []);
 
   // input
