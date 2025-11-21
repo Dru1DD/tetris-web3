@@ -25,14 +25,14 @@ const Footer = ({
           onClick={handleDownButtonClicked}
           className="bg-accent-green hover:bg-green-700 text-black w-16 h-16 sprite sprite-shadows cursor-pointer"
         >
-          ↓
+          Yes
         </button>
 
         <button
           onClick={handleUpButtonClicked}
           className="bg-accent-red hover:bg-red-700 text-black w-16 h-16 sprite sprite-shadows cursor-pointer"
         >
-          ↺
+          No
         </button>
         <button
           onClick={handleRightButtonClicked}
