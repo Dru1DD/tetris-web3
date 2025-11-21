@@ -1,6 +1,6 @@
-import { Route, Routes } from "react-router";
-import HomePage from "./pages/home";
-import GamePage from "./pages/game";
+import { Route, Routes } from 'react-router';
+import HomePage from './pages/home';
+import GamePage from './pages/game';
 
 export const Routing = () => {
   return (

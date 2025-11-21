@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
-import { createPlayfield } from "@/utils/tetris";
-import type { Piece } from "@/types/piece";
+import { useCallback, useState } from 'react';
+import { createPlayfield } from '@/utils/tetris';
+import type { Piece } from '@/types/piece';
 
 export const usePlayfield = () => {
   const [playfield, setPlayfield] = useState(createPlayfield);
@@ -23,7 +23,7 @@ export const usePlayfield = () => {
     const newPf = pf.map((row, index) => {
       if (row.every((cell) => cell !== 0)) {
         burningRows.push(index);
-        return row.map(() => "_burning");
+        return row.map(() => '_burning');
       }
       return row;
     });

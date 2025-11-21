@@ -1,5 +1,5 @@
-import { BrowserRouter } from "react-router";
-import { Routing } from "./routing";
+import { BrowserRouter } from 'react-router';
+import { Routing } from './routing';
 
 const App = () => {
   return (

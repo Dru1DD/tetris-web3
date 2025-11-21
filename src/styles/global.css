@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -8,6 +8,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-accent-blue: #1751f0;
+  --color-canvas: #00265e;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -115,13 +117,23 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
-    background-color: #1e1e1e;
-    color: white;
+    font-family: 'Nunito';
+    background-image: url('/background.png');
+    @apply bg-accent-blue text-white font-black;
   }
 }
 
 html,
 body {
   overscroll-behavior-x: none;
+}
+
+.sprite {
+  @apply relative font-medium rounded-2xl border-black border-2 overflow-hidden;
+}
+
+.sprite-shadows {
+  @apply shadow-[4px_4px_1px_0px_rgba(0,0,0,0.25)]
+    before:content-[''] before:absolute before:-inset-px before:rounded-2xl before:shadow-[inset_3px_3px_1px_rgba(255,255,255,0.5)]
+    after:content-[''] after:absolute after:-inset-px after:rounded-2xl after:shadow-[inset_-3px_-3px_0px_rgba(0,0,0,0.5)];
 }
