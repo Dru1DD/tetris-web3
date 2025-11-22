@@ -1,10 +1,5 @@
+import type { User } from '@/types/user';
 import { createContext } from 'react';
-
-export interface User {
-  uid: string;
-  displayName: string;
-  photoUrl: string;
-}
 
 export interface TwitterUserContext {
   user: User | null;

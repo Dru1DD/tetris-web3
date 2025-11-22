@@ -9,8 +9,10 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --color-accent-blue: #1751f0;
+  --color-accent-dark-blue: #002a98;
   --color-accent-red: #e23a3a;
   --color-accent-green: #31a159;
+  --color-accent-yellow: #ffc700;
   --color-canvas: #00265e;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -128,6 +130,10 @@
 html,
 body {
   overscroll-behavior-x: none;
+}
+
+.bg-menu {
+  background-image: url('/background.png');
 }
 
 .sprite {

@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSequence } from '@/hooks/use-sequence';
 import { usePlayfield } from '@/hooks/use-playfield';
-import { useUser } from '@/hooks/use-user';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
+import Menu from '@/components/menu';
 import { createPlayfield, drawFire, hasCollision, rotateTetromino } from '@/utils/tetris';
 import { COLS, GRID, POINTS, ROWS, CANVAS_WIDTH, CANVAS_HEIGHT, DROP_SPEED, IMAGES } from '@/constants/tetris';
 import type { Piece } from '@/types/piece';
 
 const Game = () => {
-  const { handleLogout } = useUser();
-
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   const { peek, next } = useSequence();
   const { playfield, setPlayfield, mergePiece, clearLines } = usePlayfield();
 
@@ -237,13 +236,13 @@ const Game = () => {
   // Game State Controllers
   // ====================================
 
-  const handleOnResumeClicked = () => {
+  const handleContinueGameClicked = () => {
     lastTimeRef.current = 0;
     dropCounterRef.current = 0;
     setRunning(true);
   };
 
-  const handleOnResetClicked = () => {
+  const handleResetButtonClicked = () => {
     setPlayfield(createPlayfield());
     setScore(0);
     setGameOver(false);
@@ -256,10 +255,6 @@ const Game = () => {
   const handleOnPauseClicked = () => {
     setRunning(false);
     setGameOver(false);
-  };
-
-  const handleOnExitClicked = () => {
-    handleLogout();
   };
 
   // ====================================
@@ -313,37 +308,15 @@ const Game = () => {
       </div>
 
       {/* TODO: Implement Pause and other functionality when design will be ready */}
-      {(!running || gameOver) && (
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-
-          <div className="relative z-10 flex flex-col items-center gap-3 text-white">
-            <h2 className="text-2xl font-semibold">{gameOver ? 'Game Over' : 'Paused'}</h2>
-            <div className="flex gap-2">
-              {!gameOver && (
-                <button
-                  onClick={handleOnResumeClicked}
-                  className="p-4 bg-white hover:bg-gray-200 text-black  sprite sprite-shadows cursor-pointer"
-                >
-                  Resume
-                </button>
-              )}
-              <button
-                onClick={handleOnResetClicked}
-                className="p-4 bg-red-600 hover:bg-red-700 text-black  sprite sprite-shadows cursor-pointer"
-              >
-                Restart
-              </button>
-              <button
-                onClick={handleOnExitClicked}
-                className="p-4 bg-green-600 hover:bg-green-700 text-black  sprite sprite-shadows cursor-pointer"
-              >
-                Exit
-              </button>
-            </div>
-          </div>
-        </div>
+      {!running && (
+        <Menu
+          isGamePaused={true}
+          handleContinueGameClicked={handleContinueGameClicked}
+          handleResetButtonClicked={handleResetButtonClicked}
+        />
       )}
+      {/* TODO: ADD gameOver flow */}
+      {gameOver && <Menu />}
 
       <Footer
         handleLeftButtonClicked={handleLeftButtonClicked}

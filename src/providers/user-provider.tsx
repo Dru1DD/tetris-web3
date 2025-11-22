@@ -1,5 +1,7 @@
 import { type ReactNode, useState, useEffect } from 'react';
-import { UserContext, type User } from '@/context/user-context';
+import { useUserMutation } from '@/hooks/mutations/use-user-mutation';
+import { UserContext } from '@/context/user-context';
+import { type User } from '@/types/user';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { firebaseAuth } from '@/lib/firebase';
 
@@ -8,22 +10,49 @@ interface UserProviderProps {
 }
 
 export const UserProvider = ({ children }: UserProviderProps) => {
+  const { mutateAsync } = useUserMutation();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
+    setIsLoading(true);
+
+    const unsub = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       if (!firebaseUser) {
         setUser(null);
-      } else {
-        // TODO: Send info to backend about user
-        setUser({
+        localStorage.removeItem('app_user');
+        setIsLoading(false);
+        return;
+      }
+
+      const cached = localStorage.getItem('app_user');
+      const parsed = cached ? JSON.parse(cached) : null;
+
+      if (parsed && parsed.uid === firebaseUser.uid) {
+        setUser(parsed);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const mutationResult = await mutateAsync();
+
+        const newUser = {
           uid: firebaseUser.uid,
           displayName: firebaseUser.displayName || '',
           photoUrl: firebaseUser.photoURL || '',
-        });
+          score: mutationResult.score,
+          place: mutationResult.place,
+          bestScore: mutationResult.bestScore,
+        };
+
+        setUser(newUser);
+        localStorage.setItem('app_user', JSON.stringify(newUser));
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return () => unsub();
