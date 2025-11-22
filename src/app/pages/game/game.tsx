@@ -11,8 +11,8 @@ import type { Piece } from '@/types/piece';
 const Game = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const { peek, next } = useSequence();
-  const { playfield, setPlayfield, mergePiece, clearLines } = usePlayfield();
+  const { peek, next, tryScheduleBrick, resetStartTime } = useSequence();
+  const { playfield, setPlayfield, mergePiece, clearLines, countBricks } = usePlayfield();
 
   const [piece, setPiece] = useState<Piece | null>(null);
   const [running, setRunning] = useState(true);
@@ -102,20 +102,25 @@ const Game = () => {
           setPlayfield(newPf);
 
           if (br.length > 0) {
-            // Wait for fire animation
+            const currentBricks = countBricks(newPf);
+            tryScheduleBrick(currentBricks);
+
             setTimeout(() => {
               setPlayfield((pf) => {
-                const filtered = pf.filter((_, idx) => !br.includes(idx));
-                while (filtered.length < ROWS) filtered.unshift(new Array(COLS).fill(0));
+                const filtered = pf.filter((row) => !row.every((cell) => cell === '_burning'));
+                while (filtered.length < ROWS) {
+                  filtered.unshift(new Array(COLS).fill(0));
+                }
                 return filtered;
               });
-            }, 300); // fire animation duration
+            }, 300);
 
             setScore((s) => s + POINTS * Math.pow(br.length, 2));
             setDropInterval((i) => Math.max(80, i - 20));
           }
 
-          const np = next();
+          const brickCount = countBricks(newPf);
+          const np = next(brickCount);
           const canMoveDown = !hasCollision(newPf, { ...np, row: np.row + 1 });
 
           if (!canMoveDown) {
@@ -130,7 +135,7 @@ const Game = () => {
 
       rafRef.current = requestAnimationFrame(update);
     },
-    [running, dropInterval, playfield, mergePiece, clearLines, setPlayfield, next],
+    [running, dropInterval, playfield, mergePiece, clearLines, setPlayfield, next, countBricks, tryScheduleBrick],
   );
 
   useEffect(() => {
@@ -208,7 +213,7 @@ const Game = () => {
 
         if (cell) {
           const img = IMAGES[cell];
-          if (img?.complete) {
+          if (img?.complete && img.naturalWidth > 0) {
             ctx.drawImage(img, c * GRID, r * GRID, GRID, GRID);
           }
         }
@@ -220,10 +225,10 @@ const Game = () => {
       const { matrix, row, col, name } = piece;
       const img = IMAGES[name];
 
-      if (img?.complete) {
-        for (let r = 0; r < matrix.length; r++) {
-          for (let c = 0; c < matrix[r].length; c++) {
-            if (matrix[r][c] && row + r >= 0) {
+      for (let r = 0; r < matrix.length; r++) {
+        for (let c = 0; c < matrix[r].length; c++) {
+          if (matrix[r][c] && row + r >= 0) {
+            if (img?.complete) {
               ctx.drawImage(img, (col + c) * GRID, (row + r) * GRID, GRID, GRID);
             }
           }
@@ -247,6 +252,7 @@ const Game = () => {
     setScore(0);
     setGameOver(false);
     setPiece(next());
+    resetStartTime();
     lastTimeRef.current = 0;
     dropCounterRef.current = 0;
     setRunning(true);

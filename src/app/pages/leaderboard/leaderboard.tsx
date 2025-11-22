@@ -19,14 +19,14 @@ const LeaderboardPage = () => {
   };
 
   return (
-    <div className="w-full h-screen p-4 flex flex-col gap-2 overflow-hidden">
-      <div className="flex-1 overflow-hidden">
+    <div className="w-full h-screen p-4 flex flex-col justify-center items-center gap-2 overflow-hidden">
+      <div className="flex-1 overflow-hidden w-full max-w-xl">
         <Leaderboard list={leaderboard.list} currentUser={user} showHeader />
       </div>
 
       <button
         onClick={handleMenuClicked}
-        className="w-full p-4 bg-white hover:bg-gray-200 text-black sprite sprite-shadows cursor-pointer rounded-xl"
+        className="w-full p-4 max-w-xl bg-white hover:bg-gray-200 text-black sprite sprite-shadows cursor-pointer rounded-xl"
       >
         Menu
       </button>

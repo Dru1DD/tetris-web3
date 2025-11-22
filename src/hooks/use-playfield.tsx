@@ -21,7 +21,10 @@ export const usePlayfield = () => {
     const burningRows: number[] = [];
 
     const newPf = pf.map((row, index) => {
-      if (row.every((cell) => cell !== 0)) {
+      const isFull = row.every((cell) => cell !== 0);
+      const hasBrick = row.some((cell) => cell === 'BRICK');
+
+      if (isFull && !hasBrick) {
         burningRows.push(index);
         return row.map(() => '_burning');
       }
@@ -31,5 +34,15 @@ export const usePlayfield = () => {
     return { newPf, burningRows } as const;
   }, []);
 
-  return { playfield, setPlayfield, mergePiece, clearLines };
+  const countBricks = useCallback((pf: (string | 0)[][]) => {
+    let count = 0;
+    for (const row of pf) {
+      for (const cell of row) {
+        if (cell === 'BRICK') count++;
+      }
+    }
+    return count;
+  }, []);
+
+  return { playfield, setPlayfield, mergePiece, clearLines, countBricks };
 };

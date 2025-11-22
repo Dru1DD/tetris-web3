@@ -11,7 +11,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [playMusic, { stop: stopMusic }] = useSound(musicFile, {
-    volume: 0.5,
+    volume: 0.1,
     loop: true,
     onplay: () => setIsPlaying(true),
     onstop: () => setIsPlaying(false),

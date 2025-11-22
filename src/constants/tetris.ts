@@ -54,6 +54,7 @@ export const TETROMINOS: Record<string, Matrix> = {
     [1, 1, 1],
     [0, 0, 0],
   ],
+  BRICK: [[1]],
 };
 
 export const IMAGES: Record<string, HTMLImageElement> = {};
@@ -79,3 +80,8 @@ export const PREVIEW_HEIGHT = 60;
 export const PREVIEW_LOGICAL_SIZE = GRID * 4;
 
 export const DROP_SPEED = 500;
+
+export const BRICK_MAX_ON_FIELD = 3;
+export const BRICK_GRACE_PERIOD_MS = 2 * 60 * 1000;
+export const BRICK_MAX_CHANCE = 0.1;
+export const BRICK_CHANCE_RAMP_MS = 60 * 1000;
