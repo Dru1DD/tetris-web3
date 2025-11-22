@@ -1,66 +1,22 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-
-const BACKEND_URL = 'http://localhost:3010';
+import { signInWithPopup, TwitterAuthProvider } from 'firebase/auth';
+import { firebaseAuth } from '@/lib/firebase';
 
 const HomePage = () => {
   const navigate = useNavigate();
 
-  // TODO: update twitter auth flow
-  const [status, setStatus] = useState('Not authenticated');
-  async function checkToken() {
+  const handleLoginButtonClicked = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/auth/twitter/token`, {
-        credentials: 'include',
-      });
-      const data = await res.json();
+      const twitterProvider = new TwitterAuthProvider();
+      const result = await signInWithPopup(firebaseAuth, twitterProvider);
 
-      console.log('Data', data);
-      if (data) {
-        console.log(data);
-        setStatus('Authenticated');
-      } else {
-        setStatus('Not authenticated');
+      const user = result.user;
+      if (user) {
+        navigate('/game');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     }
-  }
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== BACKEND_URL) return;
-      if (event.data.success) {
-        checkToken();
-        setStatus('Authenticated');
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  function handleLoginButtonClicked() {
-    setStatus('Opening Twitter OAuth...');
-
-    const width = 600;
-    const height = 700;
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
-
-    const popup = window.open(
-      `${BACKEND_URL}/auth/twitter`,
-      'twitterLogin',
-      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`,
-    );
-
-    if (!popup) {
-      setStatus('Popup blocked by browser. Allow popups!');
-    }
-  }
-
-  const handleStart = () => {
-    navigate('/game');
   };
 
   return (
@@ -79,13 +35,6 @@ const HomePage = () => {
           className="bg-white hover:bg-gray-200 text-black w-36 h-16 sprite sprite-shadows cursor-pointer"
         >
           Twitter Login
-        </button>
-
-        <button
-          onClick={handleStart}
-          className="bg-white hover:bg-gray-200 text-black w-36 h-16 sprite sprite-shadows cursor-pointer"
-        >
-          Start Game
         </button>
 
         <p className="absolute bottom-0 text-xs text-slate-400 mt-6">© {new Date().getFullYear()} PolyTetris</p>

@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router';
+import PrivateRoute from './protected-route';
 import HomePage from './pages/home';
 import GamePage from './pages/game';
 
@@ -6,7 +7,9 @@ export const Routing = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/game" element={<GamePage />} />
+      <Route element={<PrivateRoute />}>
+        <Route path="/game" element={<GamePage />} />
+      </Route>
     </Routes>
   );
 };

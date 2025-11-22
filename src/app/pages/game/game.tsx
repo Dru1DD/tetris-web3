@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useSequence } from '@/hooks/use-sequence';
 import { usePlayfield } from '@/hooks/use-playfield';
+import { useUser } from '@/hooks/use-user';
+import Footer from '@/components/footer';
+import Header from '@/components/header';
 import { createPlayfield, drawFire, hasCollision, rotateTetromino } from '@/utils/tetris';
 import { COLS, GRID, POINTS, ROWS, CANVAS_WIDTH, CANVAS_HEIGHT, DROP_SPEED, IMAGES } from '@/constants/tetris';
 import type { Piece } from '@/types/piece';
-import Footer from '@/components/footer';
-import Header from '@/components/header';
 
 const Game = () => {
-  const navigate = useNavigate();
+  const { handleLogout } = useUser();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { peek, next } = useSequence();
@@ -259,7 +259,7 @@ const Game = () => {
   };
 
   const handleOnExitClicked = () => {
-    navigate('/');
+    handleLogout();
   };
 
   // ====================================
@@ -338,7 +338,7 @@ const Game = () => {
                 onClick={handleOnExitClicked}
                 className="p-4 bg-green-600 hover:bg-green-700 text-black  sprite sprite-shadows cursor-pointer"
               >
-                Return
+                Exit
               </button>
             </div>
           </div>
