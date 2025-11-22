@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router';
 import { useUser } from '@/hooks/use-user';
+import { formatCompactNumber } from '@/utils/number';
 import bagSrc from './assets/bag.png';
 import BagIcon from './assets/bag.svg?react';
 
@@ -46,12 +47,13 @@ const Menu = ({ isGamePaused, handleContinueGameClicked, handleResetButtonClicke
 
               <div className="w-full flex flex-col items-start">
                 <span className="text-2xl flex items-center justify-center gap-1 font-semibold drop-shadow">
-                  Score: {user?.score}
+                  Score: {formatCompactNumber(user?.score || 0)}
                   <BagIcon className="w-6 h-6" />
                 </span>
 
-                <span className="text-xl drop-shadow">
-                  Best score: <span className="text-accent-yellow font-bold">{user?.bestScore}</span>
+                <span className="text-xltruncate drop-shadow">
+                  Best score:{' '}
+                  <span className="text-accent-yellow font-bold">{formatCompactNumber(user?.score || 0)}</span>
                 </span>
               </div>
             </div>

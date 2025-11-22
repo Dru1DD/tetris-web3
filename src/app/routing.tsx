@@ -8,10 +8,10 @@ export const Routing = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      {/* <Route element={<PrivateRoute />}> */}
-      <Route path="/game" element={<GamePage />} />
-      <Route path="/leaderboard" element={<LeaderboardPage />} />
-      {/* </Route> */}
+      <Route element={<PrivateRoute />}>
+        <Route path="/game" element={<GamePage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
+      </Route>
     </Routes>
   );
 };

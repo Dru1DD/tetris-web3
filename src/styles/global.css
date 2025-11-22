@@ -10,6 +10,8 @@
   --radius-xl: calc(var(--radius) + 4px);
   --color-accent-blue: #1751f0;
   --color-accent-dark-blue: #002a98;
+  --color-accent-grey: #a9a9a9;
+  --color-accent-brow: #9f5e33;
   --color-accent-red: #e23a3a;
   --color-accent-green: #31a159;
   --color-accent-yellow: #ffc700;
